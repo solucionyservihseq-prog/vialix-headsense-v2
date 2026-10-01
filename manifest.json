@@ -1,0 +1,17 @@
+{
+  "name": "VIALIX HEADSENSE v2 - Sensor de movimientos de cabeza",
+  "short_name": "HEADSENSE v2",
+  "description": "Mide los movimientos de la cabeza con el giroscopio del celular y los analiza: postura del cuello, giros y cabeceos.",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#0B6E4F",
+  "theme_color": "#0B6E4F",
+  "orientation": "portrait",
+  "icons": [
+    { "src": "icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "maskable" },
+    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}

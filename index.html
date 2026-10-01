@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>VIALIX HEADSENSE v2</title>
+<meta name="theme-color" content="#0B6E4F">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icon-192.png">
+<link rel="icon" href="icon-192.png">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<header class="topbar">
+  <div class="topbar-logo">🧠 VIALIX <span>HEADSENSE</span></div>
+  <a class="topbar-link" href="analisis.html">📊 Análisis</a>
+</header>
+
+<div class="brand-bar">
+  <img src="logo-vialix.png" alt="VIALIX - Inteligencia vial corporativa" class="brand-logo">
+  <span class="brand-separador"></span>
+  <img src="logo-arl-bolivar.png" alt="Seguros Bolívar ARL" class="brand-logo brand-logo-arl">
+</div>
+
+<main id="app">
+
+  <!-- Identificación (primera vez) -->
+  <section id="view-usuario" class="view">
+    <div class="card">
+      <h1>Bienvenido a VIALIX HEADSENSE</h1>
+      <p>Sensor de movimientos de cabeza. ¿A quién vamos a medir?</p>
+      <label class="campo">
+        Nombre de la persona
+        <input type="text" id="input-usuario" placeholder="Nombre completo">
+      </label>
+      <label class="campo">
+        Número de identificación (cédula)
+        <input type="text" id="input-identificacion" placeholder="Ej: 1234567890" inputmode="numeric">
+      </label>
+      <button type="button" id="btn-guardar-usuario" class="btn-primario">Continuar</button>
+    </div>
+  </section>
+
+  <!-- Home -->
+  <section id="view-home" class="view">
+    <div class="card home-card">
+      <p class="etiqueta">Cliente / piloto</p>
+      <p class="valor" id="home-cliente">--</p>
+      <p class="etiqueta">Persona evaluada</p>
+      <p class="valor" id="home-usuario">--</p>
+      <p class="etiqueta">Identificación</p>
+      <p class="valor" id="home-identificacion">--</p>
+      <button type="button" id="btn-cambiar-usuario" class="btn-link">Cambiar persona</button>
+    </div>
+
+    <button type="button" id="btn-nueva-medicion" class="btn-accion btn-verde">
+      <span class="btn-accion-icono">▶️</span>
+      <span>Nueva medición</span>
+    </button>
+
+    <button type="button" id="btn-historial" class="btn-accion btn-azul">
+      <span class="btn-accion-icono">🗂️</span>
+      <span>Mediciones guardadas</span>
+    </button>
+
+    <a href="analisis.html" class="btn-accion btn-morado">
+      <span class="btn-accion-icono">📊</span>
+      <span>Analizar un archivo CSV</span>
+    </a>
+
+    <a id="btn-vialix-key" href="#" class="btn-accion btn-verde hidden" rel="noopener">
+      <span class="btn-accion-icono">🔑</span>
+      <span>Ir a VIALIX KEY</span>
+    </a>
+
+    <div id="cola-badge-cont" class="cola-info hidden">
+      <span id="cola-badge">0</span>
+      <span>sesiones pendientes por sincronizar</span>
+    </div>
+    <p id="aviso-backend" class="cola-info hidden">Backend sin configurar: las sesiones se guardan solo en este celular.</p>
+  </section>
+
+  <!-- Preparar -->
+  <section id="view-preparar" class="view">
+    <div class="card">
+      <h1>Preparar la medición</h1>
+      <ol class="pasos">
+        <li>Sujeta el celular <strong>en vertical</strong> a la cabeza (diadema, gorra o casco) de modo que no se mueva ni se deslice.</li>
+        <li>Deja la pantalla hacia afuera y actívale el brillo automático o bájalo.</li>
+        <li>Al calibrar, la persona debe mirar al frente, en su postura normal, sin moverse 3 segundos.</li>
+      </ol>
+
+      <fieldset class="campo opciones">
+        <legend>¿Dónde va el celular?</legend>
+        <label><input type="radio" name="montaje" value="frente" checked> En la frente / parte delantera del casco</label>
+        <label><input type="radio" name="montaje" value="nuca"> En la nuca / parte trasera del casco</label>
+      </fieldset>
+
+      <label class="campo">
+        Actividad (opcional)
+        <input type="text" id="preparar-etiqueta" placeholder="Ej: Ruta Bogotá–Chía, puesto de trabajo 3">
+      </label>
+      <label class="campo">
+        Placa del vehículo (opcional)
+        <input type="text" id="preparar-placa" placeholder="Ej: ABC123" style="text-transform:uppercase">
+      </label>
+      <label class="check">
+        <input type="checkbox" id="check-demo">
+        Modo demostración (datos simulados, para probar sin giroscopio)
+      </label>
+
+      <p id="preparar-error" class="error hidden"></p>
+      <button type="button" id="btn-activar-sensores" class="btn-primario">Activar sensores y calibrar</button>
+      <button type="button" id="btn-volver-home-preparar" class="btn-link">← Volver al inicio</button>
+    </div>
+  </section>
+
+  <!-- Calibrar -->
+  <section id="view-calibrar" class="view">
+    <div class="card centrado">
+      <div class="resultado-icono azul">🎯</div>
+      <h1>Calibrando</h1>
+      <p id="calibrar-texto">Mira al frente y quédate quieto…</p>
+      <div class="progreso"><span id="calibrar-progreso"></span></div>
+      <button type="button" id="btn-cancelar-calibracion" class="btn-link">Cancelar</button>
+    </div>
+  </section>
+
+  <!-- Medición en vivo -->
+  <section id="view-medir" class="view">
+    <div class="card medir-cabecera">
+      <div>
+        <p class="etiqueta">Grabando <span class="punto-rec"></span></p>
+        <p class="medir-tiempo" id="medir-tiempo">00:00</p>
+        <p id="medir-demo" class="pildora nivel-medio hidden">Modo demostración</p>
+      </div>
+      <svg class="cabeza" viewBox="0 0 200 110" aria-hidden="true">
+        <g id="cabeza-frente">
+          <ellipse cx="50" cy="50" rx="26" ry="32" class="cabeza-cara"/>
+          <circle cx="26" cy="52" r="5" class="cabeza-cara"/>
+          <circle cx="74" cy="52" r="5" class="cabeza-cara"/>
+          <g id="cabeza-nariz">
+            <circle cx="41" cy="44" r="3" class="cabeza-rasgo"/>
+            <circle cx="59" cy="44" r="3" class="cabeza-rasgo"/>
+            <path d="M50 48 L46 60 L54 60 Z" class="cabeza-rasgo"/>
+          </g>
+        </g>
+        <rect x="40" y="82" width="20" height="18" rx="4" class="cabeza-cuello"/>
+        <g id="cabeza-lado">
+          <ellipse cx="148" cy="46" rx="30" ry="30" class="cabeza-cara"/>
+          <path d="M176 44 L186 52 L176 56 Z" class="cabeza-rasgo"/>
+          <circle cx="164" cy="38" r="3" class="cabeza-rasgo"/>
+        </g>
+        <rect x="140" y="72" width="20" height="28" rx="4" class="cabeza-cuello"/>
+        <text x="50" y="108" text-anchor="middle" class="cabeza-texto">frente</text>
+        <text x="150" y="108" text-anchor="middle" class="cabeza-texto">perfil</text>
+      </svg>
+    </div>
+
+    <div class="vivo">
+      <div class="vivo-eje" id="vivo-flexion">
+        <span class="vivo-nombre">Flexión <small>+ abajo / − atrás</small></span>
+        <span class="vivo-valor">0°</span>
+        <span class="vivo-barra"><span></span></span>
+      </div>
+      <div class="vivo-eje" id="vivo-rotacion">
+        <span class="vivo-nombre">Rotación <small>+ izq / − der</small></span>
+        <span class="vivo-valor">0°</span>
+        <span class="vivo-barra"><span></span></span>
+      </div>
+      <div class="vivo-eje" id="vivo-inclinacion">
+        <span class="vivo-nombre">Inclinación <small>+ der / − izq</small></span>
+        <span class="vivo-valor">0°</span>
+        <span class="vivo-barra"><span></span></span>
+      </div>
+    </div>
+
+    <div class="kpis kpis-vivo">
+      <div class="kpi"><span class="kpi-valor" id="medir-giros">0</span><span class="kpi-nombre">Giros</span></div>
+      <div class="kpi"><span class="kpi-valor" id="medir-cabeceos">0</span><span class="kpi-nombre">Cabeceos</span></div>
+      <div class="kpi"><span class="kpi-valor" id="medir-riesgo">0%</span><span class="kpi-nombre">En riesgo</span></div>
+    </div>
+
+    <div class="card">
+      <h2>Últimos 30 segundos</h2>
+      <div class="leyenda">
+        <span><i style="background:var(--serie-flexion)"></i>Flexión</span>
+        <span><i style="background:var(--serie-rotacion)"></i>Rotación</span>
+        <span><i style="background:var(--serie-inclinacion)"></i>Inclinación</span>
+      </div>
+      <canvas id="medir-grafica" class="grafica"></canvas>
+    </div>
+
+    <p class="ayuda centrado">Mantén la pantalla encendida y la app abierta mientras se mide.</p>
+    <button type="button" id="btn-recentrar" class="btn-secundario">🎯 Recentrar rotación (mirando al frente)</button>
+    <button type="button" id="btn-detener" class="btn-accion btn-rojo">
+      <span class="btn-accion-icono">⏹️</span>
+      <span>Detener y analizar</span>
+    </button>
+  </section>
+
+  <!-- Enviando -->
+  <section id="view-enviando" class="view">
+    <div class="card centrado">
+      <div class="spinner"></div>
+      <p>Analizando y guardando la sesión…</p>
+    </div>
+  </section>
+
+  <!-- Resultado -->
+  <section id="view-resultado" class="view">
+    <p id="resultado-estado" class="estado-sync"></p>
+    <div id="resultado-contenido"></div>
+    <div class="acciones-fila">
+      <button type="button" id="btn-descargar-csv" class="btn-primario">⬇️ Descargar CSV</button>
+      <button type="button" id="btn-borrar-sesion" class="btn-secundario">🗑️ Borrar</button>
+    </div>
+    <button type="button" id="btn-resultado-home" class="btn-link">← Volver al inicio</button>
+  </section>
+
+  <!-- Historial -->
+  <section id="view-historial" class="view">
+    <div class="checklist-header">
+      <h1>Mediciones guardadas</h1>
+    </div>
+    <div id="historial-lista" class="historial-lista"></div>
+    <button type="button" id="btn-volver-home-historial" class="btn-link">← Volver al inicio</button>
+  </section>
+
+</main>
+
+<script src="config.js"></script>
+<script src="analisis.js"></script>
+<script src="sensor.js"></script>
+<script src="almacen.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

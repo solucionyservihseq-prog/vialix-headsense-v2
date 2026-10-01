@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>HEADSENSE Análisis</title>
+<meta name="theme-color" content="#0B6E4F">
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="icon-192.png">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<header class="topbar">
+  <div class="topbar-logo">📊 HEADSENSE <span>ANÁLISIS</span></div>
+  <a class="topbar-link" href="index.html">← App</a>
+</header>
+
+<main id="app" class="analisis-main">
+
+  <div class="card">
+    <h1>Analizar una sesión</h1>
+    <p>Abre un CSV descargado desde la app o desde la carpeta de Google Drive, o elige una medición guardada en este dispositivo. Todo se procesa aquí mismo: el archivo no se sube a ningún lado.</p>
+
+    <label class="file-btn">
+      📂 Abrir archivo CSV
+      <input type="file" accept=".csv,text/csv" id="archivo-csv">
+    </label>
+
+    <label class="campo">
+      O una medición guardada en este dispositivo
+      <select id="sesion-local">
+        <option value="">— Elegir —</option>
+      </select>
+    </label>
+
+    <p id="analisis-error" class="error hidden"></p>
+  </div>
+
+  <details class="card">
+    <summary><strong>Umbrales del análisis</strong> (se recalcula al cambiarlos)</summary>
+    <div class="umbrales-grid">
+      <label class="campo">Flexión moderada (°)<input type="number" data-umbral="FLEXION_MODERADA" min="0" max="90"></label>
+      <label class="campo">Flexión alta (°)<input type="number" data-umbral="FLEXION_ALTA" min="0" max="90"></label>
+      <label class="campo">Extensión (°)<input type="number" data-umbral="EXTENSION" min="0" max="90"></label>
+      <label class="campo">Inclinación (°)<input type="number" data-umbral="INCLINACION" min="0" max="90"></label>
+      <label class="campo">Rotación (°)<input type="number" data-umbral="ROTACION" min="0" max="180"></label>
+      <label class="campo">Giro de cabeza (°)<input type="number" data-evento="GIRO_GRADOS" min="0" max="180"></label>
+      <label class="campo">Cabeceo: velocidad (°/s)<input type="number" data-evento="CABECEO_VELOCIDAD" min="0" max="1000"></label>
+      <label class="campo">Cabeceo: ángulo (°)<input type="number" data-evento="CABECEO_GRADOS" min="0" max="90"></label>
+    </div>
+    <p class="ayuda">Estos cambios solo aplican a esta pantalla. Para cambiarlos en la app edita <code>config.js</code>.</p>
+  </details>
+
+  <div id="analisis-resultado"></div>
+
+</main>
+
+<script src="config.js"></script>
+<script src="analisis.js"></script>
+<script src="almacen.js"></script>
+<script src="analisis-page.js"></script>
+</body>
+</html>
